@@ -1,9 +1,9 @@
-sum = 0
+total = 0
 
 with open("nums.txt", 'r') as file:
 	lines = file.readlines()
 	for line in lines:
 		num = int(line)
-		sum += num
+		total += num
 
-print sum
+print str(total)[0:10]
