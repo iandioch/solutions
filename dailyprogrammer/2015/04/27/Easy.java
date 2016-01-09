@@ -41,18 +41,20 @@ class Easy{
 
 	private static String decode(String in){
 		char[] chars = in.toCharArray();
-		boolean[] ignore = new boolean[chars.length];
+		int ignore = 0;
 		StringBuilder out = new StringBuilder(in.length()/2);
 
 		for(int i = 0; i < chars.length; i ++){
-			if(ignore[i]) continue;
+			if(ignore > 0){
+				ignore --;
+				continue;
+			}
 
 			if(isVowel(chars[i]) || isPunctuation(chars[i])){
 				out.append(chars[i]);
 			}else{
 				out.append(chars[i]);
-				ignore[i+1] = true;
-				ignore[i+2] = true;
+				ignore += 2;
 			}
 		}
 		return out.toString();
