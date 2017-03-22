@@ -13,10 +13,6 @@ class Solution {
         public void run() {
 
         }
-
-        public String toString() {
-            return "hi";
-        }
     }
 
     static class ShortLetOperation extends Operation {
@@ -27,6 +23,7 @@ class Solution {
             this.var = var;
             this.s = s;
             this.c = getVariableName(s);
+            //System.out.println("Short let: setting " + var + " to var " + c + " (raw: " + s + ")");
         }
     
         @Override public void run() {
@@ -35,6 +32,7 @@ class Solution {
             } else {
                 vartable[this.var] = vartable[this.c];
             }
+            //System.out.println("POST SHORT LET: " + this.var + " set to " + vartable[this.var]);
         }
     }
 
@@ -64,7 +62,8 @@ class Solution {
             } else {
                 b = vartable[yn];
             }
-            int result = -1;
+            //System.out.println("Long let: " + a + " " + op + " " + b);
+            int result = 0;
             switch (this.op) {
                 case '*':
                     result = a*b;
@@ -79,6 +78,7 @@ class Solution {
                     result = a-b;
             }
             vartable[this.var] = result;
+            //System.out.println("POST LONG LET: " + this.var + " set to " + vartable[this.var]);
         }
     }
 
@@ -145,7 +145,8 @@ class Solution {
                 b = vartable[yn];
             }
             if (isTrue(a, this.op, b)) {
-                currLabel = dest-1;
+                currLabel = dest;
+                justJumped = true;
             }
         }
     }
@@ -157,6 +158,7 @@ class Solution {
     static Operation currentOp;
 
     static int[] vartable = new int['Z'+1];
+    static boolean justJumped = false;
 
     public static char getVariableName(String s) {
         // returns 0 if not a valid var
@@ -168,6 +170,9 @@ class Solution {
     }
 
     public static void main(String[] args) throws Exception {
+        for (int i = 'A'; i <= 'Z'; i++) {
+            vartable[i] = 0;
+        }
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line;
         String[] parts;
@@ -185,7 +190,7 @@ class Solution {
             Operation op = null;
 
             if (command.charAt(0) == 'L') {
-                // LET
+                // LET X = <ARITHMETIC_STATEMENT>
                 char var = parts[2].charAt(0);
                 if (parts.length == 5) {
                     op = new ShortLetOperation(var, parts[4]);
@@ -194,10 +199,10 @@ class Solution {
                 }
             } else if (command.charAt(0) == 'I') {
                 int dest = Integer.parseInt(parts[parts.length-1]);
-                // IF
+                // IF <CONDITION> THEN GOTO L
                 op = new ConditionalOperation(dest, parts[2], parts[3], parts[4]);
-            } else {
-                // PRINT or PRINTLN
+            } else if (command.equals("PRINT") || command.equals("PRINTLN")) {
+                // PRINT <PRINT_STATEMENT> or PRINTLN <PRINT_STATEMENT>
                 StringBuilder b = new StringBuilder(parts[2]);
                 for (int i = 3; i < parts.length; i++) {
                     b.append(" ");
@@ -208,13 +213,35 @@ class Solution {
 
             labelToOperation.put(label, op);
         }
+
         currLabel = labelToOperation.firstKey();
-        while (true) {
-            if (currLabel == null) {
+        Integer largestLabel = labelToOperation.lastKey();
+        boolean running = true;
+        while (running) {
+            for (Integer opLabel: labelToOperation.keySet()) {
+                if (opLabel < currLabel) {
+                    continue;
+                }
+                justJumped = false;
+                labelToOperation.get(opLabel).run();
+                if (justJumped) {
+                    break;
+                }
+            }
+            if (justJumped) {
+                continue;
+            } else {
                 break;
             }
+            /*currLabel = labelToOperation.ceilingKey(currLabel);
+            justJumped = false;
+            running = !currLabel.equals(largestLabel);
             labelToOperation.get(currLabel).run();
-            currLabel = labelToOperation.higherKey(currLabel);
+            if (justJumped) {
+                continue;
+            } else {
+                currLabel = labelToOperation.higherKey(currLabel);
+            }*/
         }
     }
 }
