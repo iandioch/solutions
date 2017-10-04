@@ -1,3 +1,4 @@
+import csv
 import datetime
 import os
 import requests
@@ -12,6 +13,7 @@ from collections import defaultdict
 EXT_TO_LANG = defaultdict(lambda: 'Unknown')
 EXT_TO_LANG['py'] = 'Python'
 EXT_TO_LANG['c'] = 'C'
+EXT_TO_LANG['java'] = 'Java'
 
 
 '''Download the repo at the given URL and return the dir it is saved in.'''
@@ -60,8 +62,15 @@ def main(user):
     for prob in data:
         score = get_problem_difficulty(prob)
         data[prob]['difficulty'] = score
-        break # TODO: remove
-    print(data)
+        print('Problem {} difficulty: {}'.format(prob, score))
+    sorted_probs = sorted(data, key=lambda x:data[x]['date'])
+    with open(user + '.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quotechar='`', quoting=csv.QUOTE_MINIMAL)
+        for prob_id in sorted_probs:
+            problem = data[prob_id]
+            row = [prob_id, problem['date'].strftime('%Y-%m-%d'), problem['difficulty']] + problem['lang']
+            print(row)
+            writer.writerow(row)
 
 
 # dict of <username>:<func to load user data>
