@@ -1,13 +1,18 @@
 import datetime
 import os
+import requests
 import shutil
 import subprocess
 import sys
+from bs4 import BeautifulSoup
 from collections import defaultdict
 
+
+# Add more entries if you get lots of Unknown solutions.
 EXT_TO_LANG = defaultdict(lambda: 'Unknown')
 EXT_TO_LANG['py'] = 'Python'
 EXT_TO_LANG['c'] = 'C'
+
 
 '''Download the repo at the given URL and return the dir it is saved in.'''
 def download_git_repo(url):
@@ -15,6 +20,7 @@ def download_git_repo(url):
     result = subprocess.run(args=['git', 'clone', url, path])
     print(result)
     return path
+
 
 def get_data_iandioch():
     url = 'https://github.com/iandioch/solutions.git'
@@ -35,9 +41,28 @@ def get_data_iandioch():
     shutil.rmtree(orig_path)
     return problems
 
+
+def get_problem_difficulty(problem):
+    try:
+        url = 'https://open.kattis.com/problems/{}'.format(problem)
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        raw_difficulty = soup.find('div', 'problem-sidebar').find_all('div', 'sidebar-info')[1].find_all('p')[3].text
+        score = float(raw_difficulty.split(':')[1].strip())
+        return score
+    except Exception as e:
+        print(e)
+        return 0.0
+
+
 def main(user):
     data = supported_users[user]()
+    for prob in data:
+        score = get_problem_difficulty(prob)
+        data[prob]['difficulty'] = score
+        break # TODO: remove
     print(data)
+
 
 # dict of <username>:<func to load user data>
 # This func should return a dict like: {
@@ -49,6 +74,7 @@ def main(user):
 supported_users = {
     'iandioch': get_data_iandioch,
 }
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2 and sys.argv[1] in supported_users:
