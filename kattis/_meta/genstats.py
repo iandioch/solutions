@@ -44,6 +44,35 @@ def get_data_iandioch():
     return problems
 
 
+def get_data_flat(repo_url):
+    orig_path = download_git_repo(repo_url)
+    files = os.listdir(orig_path)
+    problems = {}
+    for f in files :
+        parts = f.split('.')
+        prob = parts[0]
+        if prob == 'README':
+            continue
+        if len(prob) == 0:
+            continue
+        if prob in problems:
+            problems[prob]['lang'].append(EXT_TO_LANG[parts[-1]])
+            continue
+        problems[prob] = {}
+        date_result = subprocess.run(args=['git', 'log', '--pretty=format:%ad', '--date=short', f], stdout=subprocess.PIPE, cwd=orig_path)
+        date_obj = datetime.datetime.today()
+        try:
+            date = date_result.stdout.decode('utf-8').split('\n')[0]
+            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        except Exception as e:
+            print(e)
+        problems[prob]['date'] = date_obj
+        problems[prob]['lang'] = []
+        problems[prob]['lang'].append(EXT_TO_LANG[parts[-1]])
+    shutil.rmtree(orig_path)
+    return problems
+
+
 def get_problem_difficulty(problem):
     try:
         url = 'https://open.kattis.com/problems/{}'.format(problem)
@@ -82,6 +111,7 @@ def main(user):
 # }
 supported_users = {
     'iandioch': get_data_iandioch,
+    'cianlr': lambda: get_data_flat('https://github.com/cianlr/kattis-solutions.git'),
 }
 
 
