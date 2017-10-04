@@ -112,6 +112,7 @@ def main(user):
 supported_users = {
     'iandioch': get_data_iandioch,
     'cianlr': lambda: get_data_flat('https://github.com/cianlr/kattis-solutions.git'),
+    'xciarag': lambda: get_data_flat('https://github.com/xCiaraG/Kattis.git'),
 }
 
 
