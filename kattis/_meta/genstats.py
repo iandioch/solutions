@@ -13,7 +13,10 @@ from collections import defaultdict
 EXT_TO_LANG = defaultdict(lambda: 'Unknown')
 EXT_TO_LANG['py'] = 'Python'
 EXT_TO_LANG['c'] = 'C'
+EXT_TO_LANG['cc'] = 'C++'
+EXT_TO_LANG['cpp'] = 'C++'
 EXT_TO_LANG['java'] = 'Java'
+
 
 
 '''Download the repo at the given URL and return the dir it is saved in.'''
