@@ -23,7 +23,6 @@ def print_grid():
 	f = '{:<' + str(len(str(n)) + 1) + '}'
 	gap = '_' + ' '*len(str(n))
 	for row in g:
-		#print('\t'.join(map(lambda v:'_' if v is None else str(v), row)))
 		print(('').join(map(lambda v:gap if v is None else f.format(v), row)))
 	print('---')
 
@@ -58,7 +57,7 @@ while ans is None:
 			g = h
 			upper_right = True
 			x, y = len(g[0])-1, len(g)-1
-			continue # <- change me
+			continue
 		v = get_sum()
 		g[y][x] = v
 		if v > n:
