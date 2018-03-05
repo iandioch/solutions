@@ -1,0 +1,1 @@
+`VGhpcyBvbmUgd2FzIGJhc2U2NC4gSXQncyBhIGxpdHRsZSBoYXJkZXIgdGhhbiB0aGUgcHJldmlvdXMgbWlzc2lvbi4gVGhlID09IG9wZXJhdG9ycyBnaXZlIGJhc2U2NCBhd2F5Lg==` is clearly base64 encoded. When b64 decoded, it produces the answer: `This one was base64. It's a little harder than the previous mission. The == operators give base64 away.`.
