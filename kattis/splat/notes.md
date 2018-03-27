@@ -1,0 +1,1 @@
+Given a query (X,Y), iterate through the paint splats in reverse order and find the nearest one where `dist(X, Y, splatX, splatY) < splatRadius`. This lookup can also be avoided if `abs(X-splatX) > splatRadius || abs(Y-splatY) > splatRadius`. If no splat is found, print `white`.
