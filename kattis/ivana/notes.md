@@ -1,0 +1,1 @@
+If Ivana takes one integer, what is left is an integer chain from A to B. The next player will always need to take an integer from the end, leaving a chain of either A+1 to B, or A to B-1. We can do dynamic programming based on this.
