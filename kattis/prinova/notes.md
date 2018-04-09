@@ -1,0 +1,1 @@
+The solution to this problem will either be (an odd number < difference 1 away from) `A`, `B`, or the midpoint between two elements in the given sequence (after being sorted). This runs in `O(n)` (0.02s in Python 3).
