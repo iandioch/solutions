@@ -1,0 +1,1 @@
+A numbersy/combinatoricsy question. I take the sum of all possible combinations, and then subtract the ones which are below 200 by finding every set of 3 that is less than 200 (as every set of 4 will be >=200).
