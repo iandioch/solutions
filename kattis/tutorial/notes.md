@@ -1,0 +1,1 @@
+Simply performing the given operation will cause a TLE for large factorials. You can speed it up by not performing the operation for any number obviously bigger than the limit, and just declaring that a TLE offhand.
