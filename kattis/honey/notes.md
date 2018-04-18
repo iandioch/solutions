@@ -1,0 +1,1 @@
+Given that N < 15, it is easy to precompute the answers to all possible inputs, in a slow exhaustive search. However, I didn't do this, because the answers follow [OEIS sequence A002898](http://oeis.org/A002898).
