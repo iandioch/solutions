@@ -1,0 +1,1 @@
+The problem asks to figure out if the given graph is bipartite. A graph colouring solution works, marking nodes the opposite colour to all that they are connected with, and then seeing if you try to colour a node two different colours. If so, the graph is not bipartite.
