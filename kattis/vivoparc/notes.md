@@ -1,0 +1,1 @@
+A graph colouring problem. Simply find any arrangement that fits the given requirement of no node being adjacent to a node of the same colour. An exhaustive search will do this, and runs in 0.32s in C.
