@@ -1,0 +1,1 @@
+A strings problem. If all words outputted are unique, then you don't have to worry about keeping track of previous words. You can do this by generating words in alphabetical order. There are much more 4-letter words possible than the maximum output size of the question, so by iterating four pointers across the alphabet, you can output enough unique words easily.
