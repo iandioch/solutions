@@ -1,0 +1,1 @@
+A convex hull problem. Just implement the Graham scan algorithm. I also sped up input by not only using `sys.stdin.readline()` instead of `input()`, but also aliasing it as `read`, so that a search of the global scope doesn't need to be performed whenever it is called. Runs in 0.55s in python3.
