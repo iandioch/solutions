@@ -1,0 +1,1 @@
+A prime sieve problem. The Sieve of Eratosthenes will work. A bitset should be used, to cut down on memory usage. The speedup of only considering odd numbers in this sieve cuts the program runtime in half. The attached C++ implementation runs in 0.55s. Integrating more wheels into the sieve (eg. cutting out the calc of powers of 3) would undoubtedly make it more efficient too.
