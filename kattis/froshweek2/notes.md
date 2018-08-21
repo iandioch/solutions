@@ -1,0 +1,1 @@
+An ad-hoc greedy scheduling problem. Sort the task lengths and interval lengths when you read them. Then take the largest task and the largest interval, see if it fits, if not move onto the next smaller task, and so on greedily. Runs in 0.04s in C++.
