@@ -1,0 +1,1 @@
+A sorting problem. Must find a strategy to sort the given list number by number, with putting each number into its sorted place taking <= 5 swaps to fit the solution constraint. Runs in 0.03s in python3.
