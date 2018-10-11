@@ -1,0 +1,1 @@
+A graph problem type thing. Keep a matrix noting whether each square requires an open pipe on the right and on the bottom. Check each type of pipe individually against the needs of the pipe above and to the left, and as soon as there's any inconsistency, return Impossible. Runs in 0.03s in python3.
