@@ -1,0 +1,1 @@
+A number theory / ad hoc question. Figure out if N*p == M*q for any N and M such that (N*p, M*q < s). The limits are small enough to put all such N*p and M*q in sets, and find the intersection. Runs in 0.02s in python3.
