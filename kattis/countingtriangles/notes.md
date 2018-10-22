@@ -1,0 +1,1 @@
+A geometry problem. Using formula @ http://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line, we can figure out if two line segments cross. Simply enumerate all lines that cross that create triangles. Runs in 0.25s in Py3.
