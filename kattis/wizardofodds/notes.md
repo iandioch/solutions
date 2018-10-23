@@ -1,0 +1,1 @@
+A maths problem. Optimal questions will result in a binary search for the answer, so just check if 2**k >= n. Can avoid calculating any 2**k if that would be larger than the max input. Runs in 0.02s in Python3.
