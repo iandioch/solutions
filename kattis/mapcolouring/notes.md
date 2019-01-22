@@ -1,0 +1,1 @@
+A graph colouring problem, simply test if the graph can be coloured with [1, 2, 3, 4] colours, and if not, print "many". Made very easy by an absurdly high running time limit of 9 seconds. This backtracking solution runs in 0.04s in python3.

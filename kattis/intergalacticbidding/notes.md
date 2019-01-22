@@ -1,0 +1,1 @@
+A greedy problem. Because each bid[i] >= 2*bid[i-1], we know that the sum of all bids below bid[i] won't be large enough to reach the target, therefore bid[i] must be used. Keep recursing until either the target is reached, or we try to add the same bid twice (ie. it won't be possible to reach the goal). Runs in 0.05s in python3.

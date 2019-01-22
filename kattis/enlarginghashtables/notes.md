@@ -1,0 +1,1 @@
+A prime numbers/number theory problem. Do a sieve of Eratosthenes up to some N, and for numbers larger than this N, do a pretty basic primality check with a speedup to cover multiples of 2 and 3. Runs in 0.03s in C++.

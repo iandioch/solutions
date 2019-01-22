@@ -1,0 +1,1 @@
+This problem requires calculating the distance between all pairs of points. However, the distance function must be a [great-circle distance](https://en.wikipedia.org/wiki/Great-circle_distance). I used the calculation of Delta-delta (for the central angle) from this link. My solution ran in 0.34s in C.

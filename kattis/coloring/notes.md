@@ -1,0 +1,1 @@
+A graph colouring problem, to find the minimal number of colours to fill the graph. The problem is NP-complete, but can be sped up by manually inserting the first 2 colours in the graph at a random node and another node connected to it. Runs in 0.47s in python3.
