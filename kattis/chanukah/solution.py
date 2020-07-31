@@ -1,8 +1,13 @@
 def main():
-    n = int(input())
+    import sys
+    read = sys.stdin.readline
+    n = int(read())
+    results = []
     for _ in range(n):
-        id_, v = input().split()
+        id_, v = read().split()
         v = int(v)
-        print(id_, (v*(v+1))//2 + v)
+        ans = v*(v+1)//2 + v
+        results.append(f'{id_} {ans}')
+    sys.stdout.write('\n'.join(results))
 
 main()
