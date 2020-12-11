@@ -5,6 +5,7 @@ blocked = [[c == '.' for c in line] for line in lines]
 alive = [[1 if c == '#' else 0 for c in line] for line in lines]
 HEIGHT = len(lines)
 WIDTH = len(lines[0])
+DIRS = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (0, -1), (1, -1), (1, 0), (1, 1)]
 
 def step(inp):
     tot = [[0 for _ in range(WIDTH + 1)] for _ in range(HEIGHT + 1)]
@@ -15,19 +16,21 @@ def step(inp):
             out[y][x] = inp[y][x]
             if blocked[y][x]:
                 continue
-            num_neighbours = 0 
-            for i in range(-1, 2):
-                if x + i < 0 or x + i >= WIDTH:
-                    continue
-                for j in range(-1, 2):
-                    if y + j < 0 or y + j >= HEIGHT:
-                        continue
-                    if i == j == 0:
-                        continue
-                    num_neighbours += inp[y+j][x+i]
+            num_neighbours = 0
+            for d in DIRS:
+                dist = 1
+                while True:
+                    j = y + d[0]*dist
+                    i = x + d[1]*dist
+                    if j < 0 or j >= HEIGHT or i < 0 or i >= WIDTH:
+                        break
+                    if not blocked[j][i]:
+                        num_neighbours += inp[j][i]
+                        break
+                    dist += 1
             if inp[y][x] == 0 and num_neighbours == 0:
                 out[y][x] = 1
-            elif inp[y][x] == 1 and num_neighbours >= 4:
+            elif inp[y][x] == 1 and num_neighbours >= 5:
                 out[y][x] = 0
 
     return out
