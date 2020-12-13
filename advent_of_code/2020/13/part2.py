@@ -33,6 +33,7 @@ def main():
     # N should only contain coprimes. We'll also need the "modular inverse" func
     # (= extended Euclidian algorithm, something something Bezout's identity),
     # which I don't understand.
+    # You can also just type your arrays into www.dcode.fr/chinese-remainder
 
     n = [b for b in bus if b is not None]
     a = [(bus[i] - i) for i in range(len(bus)) if bus[i] is not None]
