@@ -7,9 +7,10 @@ def get_neighbour_coords(tup):
     for i in range(-1, 2):
         for j in range(-1, 2):
             for k in range(-1, 2):
-                if i == j == k == 0:
-                    continue
-                yield (tup[0] + i, tup[1] + j, tup[2] + k)
+                for l in range(-1, 2):
+                    if i == j == k == l == 0:
+                        continue
+                    yield (tup[0] + i, tup[1] + j, tup[2] + k, tup[3] + l)
 
 def step(grid):
     out = defaultdict(bool)
@@ -49,23 +50,25 @@ def step(grid):
 def print_grid(grid):
     MAX = 15
 
-    minn = [0, 0, 0]
-    maxx = [0, 0, 0]
-    for z in range(-MAX, MAX):
-        for y in range(-MAX, MAX):
-            for x in range(-MAX, MAX):
-                if (x,y,z) in grid:
-                    minn = [min(minn[0], x), min(minn[1], y), min(minn[2], z)]
-                    maxx = [max(maxx[0], x), max(maxx[1], y), max(maxx[2], z)]
-    for z in range(minn[2], maxx[2] + 1):
-        print('z = {}'.format(z))
-        for y in range(minn[1], maxx[1] + 1):
-            s = ''
-            for x in range(minn[0], maxx[0] + 1):
-                active = ((x,y,z) in grid) and grid[(x,y,z)]
-                s += '#' if active else '.'
-            print(s)
-        print()
+    minn = [0, 0, 0, 0]
+    maxx = [0, 0, 0, 0]
+    for w in range(-MAX, MAX):
+        for z in range(-MAX, MAX):
+            for y in range(-MAX, MAX):
+                for x in range(-MAX, MAX):
+                    if (x,y,z,w) in grid:
+                        minn = [min(minn[0], x), min(minn[1], y), min(minn[2], z), min(minn[3], w)]
+                        maxx = [max(maxx[0], x), max(maxx[1], y), max(maxx[2], z), max(maxx[3], w)]
+    for w in range(minn[3], maxx[3] + 1):
+        for z in range(minn[2], maxx[2] + 1):
+            print('z = {}, w = {}'.format(z, w))
+            for y in range(minn[1], maxx[1] + 1):
+                s = ''
+                for x in range(minn[0], maxx[0] + 1):
+                    active = ((x,y,z,w) in grid) and grid[(x,y,z,w)]
+                    s += '#' if active else '.'
+                print(s)
+            print()
 
 
 def main():
@@ -73,7 +76,7 @@ def main():
 
     for y, line in enumerate(sys.stdin.readlines()):
         for x, c in enumerate(line):
-            grid[(x, y, 0)] = c == '#'
+            grid[(x, y, 0, 0)] = c == '#'
 
     for i in range(6):
         print('-'*10)
