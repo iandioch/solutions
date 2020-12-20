@@ -6,7 +6,7 @@ from functools import reduce, lru_cache
 
 NEIGHBOURS = [(0, 1), (1, 0), (-1, 0), (0, -1)]
 ORIENTATIONS = [(num_rot, horiz_flip, vertical_flip)
-        for num_rot in range(4)
+        for num_rot in range(2)
         for horiz_flip in [False, True]
         for vertical_flip in [False, True]]
 
