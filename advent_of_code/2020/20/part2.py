@@ -2,15 +2,19 @@ import enum
 import sys
 import operator
 from collections import defaultdict, deque
-from functools import reduce
+from functools import reduce, lru_cache
 
 NEIGHBOURS = [(0, 1), (1, 0), (-1, 0), (0, -1)]
-ORIENTATIONS = [(num_rot, horiz_flip, vertical_flip) for num_rot in range(4) for horiz_flip in [False, True] for vertical_flip in [False, True]]
+ORIENTATIONS = [(num_rot, horiz_flip, vertical_flip)
+        for num_rot in range(4)
+        for horiz_flip in [False, True]
+        for vertical_flip in [False, True]]
 
+@lru_cache(maxsize=None)
 def get_rotated_tile(grid, num_rotations, horizontal_flip, vertical_flip):
     out = grid[:]
     for i in range(num_rotations):
-        out = list(zip(*out[::-1])) # fancy shortcut to rotate
+        out = tuple(zip(*out[::-1])) # fancy shortcut to rotate 90deg
     if horizontal_flip:
         out = [o[::-1] for o in out]
     if vertical_flip:
@@ -32,6 +36,8 @@ def tiles_match(placed_tile, new_tile, direction):
         return placed_tile[0] == new_tile[-1]
 
 def get_grid_string(grid, rotation, tiles):
+    # Get the compiled grid, without borders, based on the positions in 'grid'.
+    # Returns a tuple of strings (one item for each row of the grid).
     ids = get_grid_ids(grid)
     out_grid = [['X' for x in range(8*len(ids[0]))] for y in range(8*len(ids))]
     for y in range(len(ids)):
@@ -41,11 +47,13 @@ def get_grid_string(grid, rotation, tiles):
             for j in range(8):
                 for i in range(8):
                     out_grid[y*8 + j][x*8 + i] = tile_grid[j+1][i+1]
-    return [''.join(o) for o in out_grid]
+    return tuple(''.join(o) for o in out_grid)
 
 # A hacky wrapper around assemble_grid. The starting tile's flips (horizontal
 # and/or vertical) may make the rest of the grid unsolvable, so try every
 # combination until one works...
+# Note: I'm not sure if the fact that it makes it unsolvable is because of a bug
+# in assemble_grid() or not, but this works, so ¯\_(ツ)_/¯
 def outer_assemble_grid(tiles, adjacency):
     for starting_rot in [(False, False), (True, True), (False, True), (True, False)]:
         grid, rotation = assemble_grid(tiles, adjacency, starting_rot)
@@ -57,53 +65,65 @@ def assemble_grid(tiles, adjacency, starting_rot):
     grid = {} # maps tuple(x,y) to tile ID
     remaining = set(tiles)
 
-    # start with any corner, and fill out from there
-    starting_tile = next(t for t in tiles if len(adjacency[t]) == 2)
+    # Start with a corner, and fill out from there.
+    # The starting tile does seem to matter in this impl, which suggests a bug
+    # somewhere in it...
+    starting_tile = min(t for t in tiles if len(adjacency[t]) == 2)
     grid[(0,0)] = starting_tile
     rotation[starting_tile] = (0, starting_rot[0], starting_rot[1])
     remaining.remove(starting_tile)
 
     q = deque(NEIGHBOURS)
-    done = set() # a set of tried positions
     while len(q):
         pos = q.popleft()
-        if pos in done:
+        if pos in grid:
+            # We've already placed a tile here.
             continue
-        #done.add(pos)
-
         found = False
         for tile in remaining:
-            # see if tile fits in pos and at what rotation
+            # Check every as-yet-unplaced tile, and see if it fits in this spot,
+            # in any orientation. There should be exactly one, unless this spot
+            # is outside of the grid.
             for orientation in ORIENTATIONS:
                 tile_grid = get_rotated_tile(tiles[tile], *orientation)
+
+                # Try all of the tiles already placed which border this spot;
+                # if any of them matches the tile we're trying to place, go for
+                # it!
+                # It shouldn't occur that one already-placed tile matches and 
+                # another one doesn't, so we just don't check that case...
                 matching_neighbours = 0
-                for n in NEIGHBOURS:
-                    np = (pos[0] + n[0], pos[1] + n[1])
-                    if np not in grid:
+                for direction in NEIGHBOURS:
+                    neighbour_pos = (pos[0] + direction[0],
+                                     pos[1] + direction[1])
+                    if neighbour_pos not in grid:
                         continue
-                    neighbour = grid[np]
+                    neighbour = grid[neighbour_pos]
                     if not tiles_match(get_rotated_tile(tiles[neighbour],
                                                         *rotation[neighbour]),
-                                       tile_grid, n):
+                                       tile_grid, direction):
                         break
                     matching_neighbours += 1
                 if matching_neighbours >= 1:
                     found = True
-                    print('Found position for tile "{}": {}'.format(tile, pos))
                     grid[pos] = tile
                     rotation[tile] = orientation
                     remaining.remove(tile)
                     break
             if found:
+                # Stop looking at other tiles...
                 break
-
         if found:
             for n in NEIGHBOURS:
                 next_pos = (pos[0] + n[0], pos[1] + n[1])
                 q.append(next_pos)
 
-    print(remaining)
+    print('Tiles remaining after assembling grid, starting at tile {} ' \
+          '(with rotation {}): {}'.format(
+              starting_tile, starting_rot, len(remaining)))
     if len(remaining):
+        # If there are remaining tiles, don't count this as a valid grid
+        # arrangement, and return None.
         return None, None
     return grid, rotation
 
@@ -125,6 +145,7 @@ def get_grid_ids(grid):
         out.append(row)
     return out
 
+# debug_rot here is just a string identifier to optionally print.
 def count_monsters(grid_str, debug_rot=None):
     MONSTER = ['                  # ',
                '#    ##    ##    ###',
@@ -132,39 +153,29 @@ def count_monsters(grid_str, debug_rot=None):
     MON_WIDTH = len(MONSTER[0])
     MON_HEIGHT = 3
     num_monster = 0
-    for y in range(len(grid_str)):
-        for x in range(len(grid_str[y])):
+    for y in range(len(grid_str) - MON_HEIGHT + 1):
+        for x in range(len(grid_str[y]) - MON_WIDTH + 1):
             matches_monster = True
             for j in range(MON_HEIGHT):
-
-                if y + j >= len(grid_str):
-                    matches_monster = False
-                    break
-
                 for i in range(MON_WIDTH):
-
-                    if x + i >= len(grid_str[y]):
-                        matches_monster = False
-                        break
-
                     if MONSTER[j][i] == ' ':
                         continue
                     if grid_str[y+j][x+i] != '#':
                         matches_monster = False
                         break
             if matches_monster:
-                print('Found a monster!')
                 num_monster += 1
     tot = 0
     for y in range(len(grid_str)):
         for x in range(len(grid_str[0])):
             if grid_str[y][x] == '#':
                 tot += 1
+    ans = tot - num_monster*15
     if debug_rot is not None:
-        print('For rotation', debug_rot)
-    print('{} total #s'.format(tot))
-    print('{} are part of a monster'.format(num_monster*15))
-    return tot - num_monster*15
+        print('For rotation {}:\t'.format(debug_rot), end=' ')
+    print('{:03d}/{:04d} #s are part of a monster.\tAns: {}'.format(
+        num_monster*15, tot, ans))
+    return ans
 
 def main():
     tiles = {} 
@@ -172,7 +183,7 @@ def main():
     tile_to_pattern = defaultdict(list)
     def add_tile(name, lines):
         name_num = int(name.split()[1][:-1])
-        tiles[name_num] = lines
+        tiles[name_num] = tuple(lines)
         # top and bottom both ways
         patterns = [lines[0], lines[-1], lines[0][::-1], lines[-1][::-1]]
         # two sides
@@ -212,8 +223,9 @@ def main():
     for row in grid_ids:
         print(row)
     
-    # Print debug grid including borders.
-    out_grid = [[' ' for x in range(11*len(grid_ids[0]))] for y in range(11*len(grid_ids))]
+    # Print debug grid including borders, with gaps between tiles.
+    out_grid = [[' ' for x in range(11*len(grid_ids[0]))]
+                     for y in range(11*len(grid_ids))]
     for y in range(len(grid_ids)):
         for x in range(len(grid_ids[0])):
             tile_id = grid_ids[y][x]
@@ -232,8 +244,6 @@ def main():
     minn = 100000000
     for o in ORIENTATIONS:
         rot_grid = get_rotated_tile(grid_str, *o)
-        for row in rot_grid:
-            print(''.join(row))
         monst = count_monsters(rot_grid, debug_rot=o)
         minn = min(minn, monst)
     print('Answer:', minn)
