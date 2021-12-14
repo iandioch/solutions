@@ -8,20 +8,6 @@ def replace(pairs, repl):
         out[a + repl[pair]] += pairs[pair]
         out[repl[pair] + b] += pairs[pair]
     return out
-    betweens = []
-    for i in range(len(template)-1):
-        k = template[i] + template[i+1]
-        if k in pairs:
-            betweens.append(pairs[k])
-        else:
-            betweens.append(None)
-    out = []
-    for a, b in zip(template, betweens):
-        out.append(a)
-        if b is not None:
-            out.append(b)
-    out.append(template[-1])
-    return ''.join(out)
 
 def main():
     template = input()
